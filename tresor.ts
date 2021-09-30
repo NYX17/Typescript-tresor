@@ -1,50 +1,63 @@
 import { Gegenstand } from "./gegenstand";
 import { GegenstandNichtGefundenError } from "./gegenstandNichtGefundenError";
 
-export class Tresor {
-  
-  /**
-   * Typ ArrayList (vgl. Java) nicht vorhanden --> Array verwenden!
-   */
-   private gegenstaende: Gegenstand[]
+export class Tresor{
 
-   constructor() {
-     this.gegenstaende = new Array();
-   }
- 
-   //todo Gegenstand hinzufügen (addGegenstand)
-   
-   //todo Gegenstand finden (getGegenstand) 
-   /**
-    * Drei verschiedene Varianten des Durchsuchens des Arrays möglich:
-    * a) forEach-Schleife --> in typescript 'for ... of'
-    *    --> vgl. https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html#forof-statements
-    * b) for-Zählerschleife mit Iteration
-    *    --> vergleichbar mit der Umsetzung in Java
-	* c) Methode find() auf das Array anwenden
-    *    --> vgl. https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-    */
+private gegenstaende: Gegenstand[];
 
-   //todo Gegenstand aus Tresor nehmen (removeGegenstand)
-   /**
-    * 1. sinnvollerweise zunächst prüfen, ob der Gegenstand im Tresor ist
-	*    (vgl. gewählte Variante für "Gegenstand finden", also für 'getGegenstand')
-    * 2. wenn nicht gefunden, Fehler werfen (GegenstandNichtGefundenError), ebenfalls wie in 'getGegenstand'
-	* 3. Methode filter() auf das Array anwenden, um dieses neu aufzubauen
-	*    vgl. https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/filter 
-    */
+constructor(){
+this.gegenstaende = new Array();
+}
 
-   berechneGesamtwert(): number {
-     let summeWerte: number = 0;
-     this.gegenstaende.forEach(gegenstand => summeWerte += gegenstand.wert);
-     return summeWerte;
-   }
+addGegenstand(g: Gegenstand){
+  this.gegenstaende.push(g);
+}
 
-   //todo toString
-   toString(): string {
-     let text: string = "LISTE DER GEGENSTÄNDE"
-     //todo, vgl. forEach in berechneGesamtwert()
-     return text;
-   }
+getGegenstand(id: number): Gegenstand {
+  for( let i: number = 0; i < this.gegenstaende.length; i++){
+    if(id === this.gegenstaende[i].id){
+    return this.gegenstaende[i];
+    }
+  }
+  throw new GegenstandNichtGefundenError(id);
+}
+
+getGegenstand_V2(id: number): Gegenstand {
+  for(let g of this.gegenstaende) {
+    if(id === g.id) {
+      return g;
+    }
+  }
+  throw new GegenstandNichtGefundenError(id);
+}
+
+getGegenstand_V3(id: number): Gegenstand {
+  let gefundenerGegenstand = this.gegenstaende.find(g => g,id === id);
+  if(gefundenerGegenstand != undefined) {
+    return gefundenerGegenstand;
+  }
+  throw new GegenstandNichtGefundenError(id);
+}
+
+removeGegenstand(gegenstand: Gegenstand) {
+  let gegenstandToRemove = this.gegenstaende.find(g => g === gegenstand);
+  if(gegenstandToRemove !== undefined) {
+    this.gegenstaende = this.gegenstaende.filter(g => g !== gegenstandToRemove);
+  }else {
+    throw new GegenstandNichtGefundenError(gegenstand.id);
+  }
+}
+
+berechnegesatwert(): number {
+  let summe: number = 0;
+  this.gegenstaende.forEach(g => summe += g.wert);
+  return summe;
+}
+
+toString(): string {
+  let text: string = "\n\nTRESORINHALT:";
+  this.gegenstaende.forEach(g => text += g.toString());
+  return text;
+}
 
 }
